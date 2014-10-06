@@ -1,0 +1,65 @@
+public class Solution {
+    public List<List<String>> findLadders(String start, String end, Set<String> dict) {
+        List<List<String>> list = new ArrayList<List<String>>();
+        Queue<String> queue = new LinkedList<String>();
+        HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+        List<String> item;
+        int size;
+        boolean found = false;
+        String tmp, change, prev;
+        queue.offer(start);
+        while ((queue.isEmpty() == false) && (found == false)) {
+            size = queue.size();
+            for (String a:queue) {
+                dict.remove(a);
+            }
+            for (int i = 0; i < size; i++) {
+                tmp = queue.poll();
+                for (char replace = 'a'; replace <= 'z'; replace++) {
+                    for (int j = 0; j < tmp.length(); j++) {
+                        if (tmp.charAt(j) == replace) 
+                             continue;
+                        change = replace(tmp, j, replace);
+                        if (dict.contains(change) || change.equals(end)) {
+                            if (map.containsKey(change)) {
+                                item = map.get(change);
+                                item.add(tmp);
+                            } else {
+                                item = new ArrayList<String>();
+                                item.add(tmp);
+                                map.put(change, item);
+                                queue.offer(change);
+                            }
+                            if (change.equals(end))
+                            found = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (found == false) return list;
+        dfs(list, map, new ArrayList<String>(), start, end);
+        return list;
+    }
+    private void dfs(List<List<String>> list, HashMap<String, List<String>> map, List<String> prev, String start, String cur) {
+        List<String> item, tmp;
+        if (cur.equals(start)) {
+            item = new ArrayList<String>(prev);
+            item.add(0, start);
+            list.add(item);
+            return;
+        }
+        
+        prev.add(0, cur);
+        tmp = map.get(cur);
+        for (String s:tmp) {
+            dfs(list, map, prev, start, s);
+        }
+        prev.remove(0);
+    }
+    private String replace(String cur, int pos, char cha) {
+        char[] tmp = cur.toCharArray();
+        tmp[pos] = cha;
+        return new String(tmp);
+    }
+}
