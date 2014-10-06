@@ -1,0 +1,48 @@
+/**
+ * Definition for a point.
+ * class Point {
+ *     int x;
+ *     int y;
+ *     Point() { x = 0; y = 0; }
+ *     Point(int a, int b) { x = a; y = b; }
+ * }
+ */
+public class Solution {
+    public int maxPoints(Point[] points) {
+        int len = points.length;
+        if (len <= 0) return 0;
+        double[] ratio = new double[len];
+        int diffX, diffY, origin, same =0, max;
+        max = 0;
+        for (int i = 0; i < len; i++) {
+            origin = 0;
+            for (int j = 0; j < len; j++) {
+                diffY = points[j].y - points[i].y;
+                diffX = points[j].x - points[i].x;
+                if ((diffY == 0) && (diffX == 0)) {
+                    ratio[j] = Double.NEGATIVE_INFINITY;
+                    origin++;
+                } else if (diffY == 0) {
+                    ratio[j] = 0;
+                } else if (diffX == 0) {
+                    ratio[j] = Double.POSITIVE_INFINITY;
+                } else {
+                    ratio[j] = (double)diffY / diffX;
+                }
+            }
+            Arrays.sort(ratio);
+            max = Math.max(max, origin);
+            for (int j = 0; j < len; j++) {
+                if ((j > 0) && (ratio[j] == ratio[j-1])) {
+                    same++;
+                } else {
+                    same = 1;
+                }
+                if (ratio[j] != Double.NEGATIVE_INFINITY) {
+                    max = Math.max(max, same + origin);
+                }
+            }
+        }
+        return max;
+    }
+}
